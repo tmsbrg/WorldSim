@@ -5,7 +5,7 @@ import javax.swing.event.*;
 
 public class GUI implements Runnable,ActionListener,ChangeListener {
 
-	public void run() {
+    public void run() {
         JFrame f = new JFrame("WorldSim");
 
         f.setPreferredSize(new Dimension(800, 400));
@@ -54,7 +54,7 @@ public class GUI implements Runnable,ActionListener,ChangeListener {
         f.pack();
         f.setVisible(true);
 
-	}
+    }
 
     public void actionPerformed(ActionEvent e) {
         switch (e.getActionCommand()) {
