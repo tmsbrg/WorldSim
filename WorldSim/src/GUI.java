@@ -12,9 +12,11 @@ public class GUI implements Runnable,ActionListener,ChangeListener {
         f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         f.setLayout(new FlowLayout());
         
-        ImageIcon icon = new ImageIcon("data/map.png", "Map mockup");
+        /*ImageIcon icon = new ImageIcon("data/map.png", "Map mockup");
         JLabel mapLabel = new JLabel(icon);
-        f.add(mapLabel);
+        f.add(mapLabel);*/
+        WorldMap map = new WorldMap();
+        f.add(map);
 
         JTextArea infoArea = new JTextArea(
                 "Halverton - Castle\n"+
