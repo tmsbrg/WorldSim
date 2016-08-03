@@ -1,3 +1,5 @@
+package worldSim;
+
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
@@ -6,31 +8,33 @@ import javax.swing.event.*;
 public class GUI implements Runnable,ActionListener,ChangeListener,
         TileSelectionReceiver {
 
-    TileInfoText textInfo;
+    private WorldModel world = null;
+    private TileInfoText textInfo = null;
 
     public void run() {
-        JFrame f = new JFrame("WorldSim");
+        world = new WorldModel();
 
+        JFrame f = new JFrame("WorldSim");
         f.setPreferredSize(new Dimension(800, 400));
         f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         f.setLayout(new FlowLayout());
-        
+
         /*ImageIcon icon = new ImageIcon("data/map.png", "Map mockup");
         JLabel mapLabel = new JLabel(icon);
         f.add(mapLabel);*/
-        WorldMap map = new WorldMap(this);
+        WorldMap map = new WorldMap(this, world);
         f.add(map);
 
         textInfo = new TileInfoText();
         f.add(textInfo);
-        
+
         JSlider timeline = new JSlider(JSlider.HORIZONTAL, 0, 400, 0);
         timeline.addChangeListener(this);
         timeline.setMajorTickSpacing(100);
         timeline.setPaintTicks(true);
         timeline.setPreferredSize(new Dimension(700, 50));
         f.add(timeline);
-        
+
         f.pack();
         f.setVisible(true);
 

@@ -1,21 +1,24 @@
+package worldSim;
+
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
+
 
 public class WorldMap extends JPanel {
 
     private static final long serialVersionUID = 4025499860418720647L;
 
     private static final int TILE_SIZE = 16;
-    private int width = 21;
-    private int height = 15;
     private TileSelectionReceiver receiver = null;
     private Point selectedTile = null;
-    private boolean[][] terrainMap = null;
+    private WorldModel world;
 
-    public WorldMap(TileSelectionReceiver r) {
-        setPreferredSize(new Dimension(width * TILE_SIZE, height * TILE_SIZE));
+    public WorldMap(TileSelectionReceiver r, WorldModel w) {
         receiver = r;
+        world = w;
+        setPreferredSize(new Dimension(world.getWidth() * TILE_SIZE,
+                    world.getHeight() * TILE_SIZE));
         addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -25,22 +28,16 @@ public class WorldMap extends JPanel {
                 receiver.setTileSelection(selectedTile);
             }
         });
-        terrainMap = new boolean[height][width];
-        for (int y = 0; y < height; y++) {
-            for (int x = 0; x < width; x++) {
-                terrainMap[y][x] = Math.random() < 0.6;
-            }
-        }
     }
 
     public void paintComponent(Graphics g) {
-        for (int y = 0; y < height; y++) {
-            for (int x = 0; x < width; x++) {
+        for (int y = 0; y < world.getHeight(); y++) {
+            for (int x = 0; x < world.getWidth(); x++) {
                 Color c;
                 if (selectedTile != null && x == selectedTile.x
                         && y == selectedTile.y) {
                     c = Color.YELLOW;
-                } else if (terrainMap[y][x]) {
+                } else if (world.getTerrain(x, y)) {
                     c = Color.GREEN;
                 } else {
                     c = Color.BLUE;

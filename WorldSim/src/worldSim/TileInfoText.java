@@ -1,3 +1,5 @@
+package worldSim;
+
 import java.awt.*;
 import javax.swing.*;
 
