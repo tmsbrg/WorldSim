@@ -18,6 +18,10 @@ public class WorldModel {
     public WorldModel(int w, int h) {
         width = w;
         height = h;
+        regenerateMap();
+    }
+
+    public void regenerateMap() {
         terrainMap = new boolean[height][width];
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
@@ -26,7 +30,7 @@ public class WorldModel {
         }
         UniformPoissonDiskSampler cityLocationSampler =
             new UniformPoissonDiskSampler(0.0, 0.0,
-                    (double)width, (double)height, 2.0);
+                    (double)width, (double)height, 2.5);
         List<Vector2DDouble> locations = cityLocationSampler.sample();
 
         cities = new ArrayList<City>();

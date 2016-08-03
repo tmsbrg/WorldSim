@@ -6,13 +6,13 @@ import javax.swing.*;
 public class TileInfoText extends JScrollPane {
 
     private static final long serialVersionUID = -1713085912898401821L;
+    private static final String DEFAULT_TEXT = "Click a tile in the map to the"
+       + " left to get information about it.";
 
     private JTextArea infoArea;
 
     public TileInfoText() {
-        infoArea = new JTextArea(
-                "Click a tile in the map to the left to get information"
-                + " about it.");
+        infoArea = new JTextArea(DEFAULT_TEXT);
                 /*
                 "Halverton - Castle\n"+
                 "Owned by Kingdom of Goldrock\n"+
@@ -41,6 +41,10 @@ public class TileInfoText extends JScrollPane {
     }
 
     public void updateText(Point tile, WorldModel world) {
+        if (tile == null) {
+            infoArea.setText(DEFAULT_TEXT);
+            return;
+        }
         String s = "";
         for (City c : world.getCities()) {
             if (c.getLocation().equals(tile)) {

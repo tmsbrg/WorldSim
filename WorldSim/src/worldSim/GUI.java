@@ -5,24 +5,22 @@ import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.event.*;
 
-public class GUI implements Runnable,ActionListener,ChangeListener,
-        TileSelectionReceiver {
+public class GUI implements Runnable,ChangeListener, TileSelectionReceiver {
 
-    private WorldModel world = null;
-    private TileInfoText textInfo = null;
+    private WorldModel world;
+    private WorldMap map;
+    private TileInfoText textInfo;
 
     public void run() {
         world = new WorldModel();
 
+        // UI components
         JFrame f = new JFrame("WorldSim");
         f.setPreferredSize(new Dimension(800, 400));
         f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         f.setLayout(new FlowLayout());
 
-        /*ImageIcon icon = new ImageIcon("data/map.png", "Map mockup");
-        JLabel mapLabel = new JLabel(icon);
-        f.add(mapLabel);*/
-        WorldMap map = new WorldMap(this, world);
+        map = new WorldMap(this, world);
         f.add(map);
 
         textInfo = new TileInfoText();
@@ -38,16 +36,11 @@ public class GUI implements Runnable,ActionListener,ChangeListener,
         f.pack();
         f.setVisible(true);
 
-    }
-
-    public void actionPerformed(ActionEvent e) {
-        switch (e.getActionCommand()) {
-            case "wow":
-                System.out.println("wow!");
-                break;
-            default:
-                break;
-        }
+        // keyboard input
+        // needs any component, map is chosen arbitrarily
+        map.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(
+                KeyStroke.getKeyStroke(KeyEvent.VK_R, 0), "regenerate");
+        map.getActionMap().put("regenerate", new keyHandler());
     }
 
     public void stateChanged(ChangeEvent e) {
@@ -57,8 +50,22 @@ public class GUI implements Runnable,ActionListener,ChangeListener,
         }
     }
 
-    // assumes given tile position is within the actual world
+    // assumes given tile position is within the actual world, or null
+    // if none is selected
     public void setTileSelection(Point tile) {
         textInfo.updateText(tile, world);
+    }
+
+    private void regenerateMap() {
+        world.regenerateMap();
+        map.reloadMap();
+    }
+
+    private class keyHandler extends AbstractAction {
+        private static final long serialVersionUID = 3894711001576570273L;
+
+        public void actionPerformed(ActionEvent e) {
+            regenerateMap();
+        }
     }
 }

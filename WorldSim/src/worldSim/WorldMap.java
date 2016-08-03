@@ -43,6 +43,12 @@ public class WorldMap extends JPanel {
         }
     }
 
+    public void reloadMap() {
+        selectedTile = null;
+        repaint();
+        receiver.setTileSelection(selectedTile);
+    }
+
     public void paintComponent(Graphics g) {
         for (int y = 0; y < world.getHeight(); y++) {
             for (int x = 0; x < world.getWidth(); x++) {
