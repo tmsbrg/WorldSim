@@ -40,7 +40,19 @@ public class GUI implements Runnable,ChangeListener, TileSelectionReceiver {
         // needs any component, map is chosen arbitrarily
         map.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(
                 KeyStroke.getKeyStroke(KeyEvent.VK_R, 0), "regenerate");
-        map.getActionMap().put("regenerate", new keyHandler());
+        map.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(
+                KeyStroke.getKeyStroke(KeyEvent.VK_A, 0), "moveleft");
+        map.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(
+                KeyStroke.getKeyStroke(KeyEvent.VK_D, 0), "moveright");
+        map.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(
+                KeyStroke.getKeyStroke(KeyEvent.VK_W, 0), "moveup");
+        map.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(
+                KeyStroke.getKeyStroke(KeyEvent.VK_S, 0), "movedown");
+        map.getActionMap().put("moveleft", new MoveAction(-1, 0));
+        map.getActionMap().put("moveright", new MoveAction(1, 0));
+        map.getActionMap().put("moveup", new MoveAction(0, -1));
+        map.getActionMap().put("movedown", new MoveAction(0, 1));
+        map.getActionMap().put("regenerate", new RegenerateAction());
     }
 
     public void stateChanged(ChangeEvent e) {
@@ -61,9 +73,27 @@ public class GUI implements Runnable,ChangeListener, TileSelectionReceiver {
         map.reloadMap();
     }
 
-    private class keyHandler extends AbstractAction {
+    private class MoveAction extends AbstractAction {
+        private static final long serialVersionUID = -7868311981765821389L;
+
+        private int x;
+        private int y;
+
+        public MoveAction(int x, int y) {
+            this.x = x;
+            this.y = y;
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            map.moveSelectedTile(x, y);
+        }
+    }
+
+    private class RegenerateAction extends AbstractAction {
         private static final long serialVersionUID = 3894711001576570273L;
 
+        @Override
         public void actionPerformed(ActionEvent e) {
             regenerateMap();
         }

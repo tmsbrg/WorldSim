@@ -43,6 +43,17 @@ public class WorldMap extends JPanel {
         }
     }
 
+    public void moveSelectedTile(int x, int y) {
+        if (selectedTile != null) {
+            selectedTile.x += x + world.getWidth();
+            selectedTile.x %= world.getWidth();
+            selectedTile.y += y + world.getHeight();
+            selectedTile.y %= world.getHeight();
+            repaint();
+            receiver.setTileSelection(selectedTile);
+        }
+    }
+
     public void reloadMap() {
         selectedTile = null;
         repaint();
