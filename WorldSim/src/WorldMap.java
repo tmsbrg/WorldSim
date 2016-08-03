@@ -9,17 +9,20 @@ public class WorldMap extends JPanel {
     private static final int TILE_SIZE = 16;
     private int width = 21;
     private int height = 15;
+    private TileSelectionReceiver receiver = null;
     private Point selectedTile = null;
     private boolean[][] terrainMap = null;
 
-    public WorldMap() {
+    public WorldMap(TileSelectionReceiver r) {
         setPreferredSize(new Dimension(width * TILE_SIZE, height * TILE_SIZE));
+        receiver = r;
         addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 selectedTile = new Point(e.getPoint().x / TILE_SIZE,
                         e.getPoint().y / TILE_SIZE);
                 repaint();
+                receiver.setTileSelection(selectedTile);
             }
         });
         terrainMap = new boolean[height][width];

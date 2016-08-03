@@ -3,7 +3,10 @@ import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.event.*;
 
-public class GUI implements Runnable,ActionListener,ChangeListener {
+public class GUI implements Runnable,ActionListener,ChangeListener,
+        TileSelectionReceiver {
+
+    TileInfoText textInfo;
 
     public void run() {
         JFrame f = new JFrame("WorldSim");
@@ -15,34 +18,11 @@ public class GUI implements Runnable,ActionListener,ChangeListener {
         /*ImageIcon icon = new ImageIcon("data/map.png", "Map mockup");
         JLabel mapLabel = new JLabel(icon);
         f.add(mapLabel);*/
-        WorldMap map = new WorldMap();
+        WorldMap map = new WorldMap(this);
         f.add(map);
 
-        JTextArea infoArea = new JTextArea(
-                "Halverton - Castle\n"+
-                "Owned by Kingdom of Goldrock\n"+
-                "Controlled by Lord Averick of Halverton\n"+
-                "\n"+
-                "Population: ~50'000\n"+
-                "Garrison: 2'180\n"+
-                "\n"+
-                "Founded on 5 jan 98 by Kingdom of Dalmycia\n"
-        );
-        infoArea.setEditable(false);
-        infoArea.setFont(new Font("Serif", Font.PLAIN, 12));
-        infoArea.setLineWrap(true);
-        infoArea.setWrapStyleWord(true);
-        JScrollPane areaScrollPane = new JScrollPane(infoArea);
-        areaScrollPane.setVerticalScrollBarPolicy(
-                        JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-        areaScrollPane.setPreferredSize(new Dimension(350, 250));
-        areaScrollPane.setBorder(
-            BorderFactory.createCompoundBorder(
-                BorderFactory.createCompoundBorder(
-                                BorderFactory.createTitledBorder("Selected tile"),
-                                BorderFactory.createEmptyBorder(5,5,5,5)),
-                areaScrollPane.getBorder()));
-        f.add(areaScrollPane);
+        textInfo = new TileInfoText();
+        f.add(textInfo);
         
         JSlider timeline = new JSlider(JSlider.HORIZONTAL, 0, 400, 0);
         timeline.addChangeListener(this);
@@ -71,5 +51,10 @@ public class GUI implements Runnable,ActionListener,ChangeListener {
         if (!source.getValueIsAdjusting()) {
                 System.out.println("new value: " + source.getValue());
         }
+    }
+
+    // assumes given tile position is within the actual world
+    public void setTileSelection(Point tile) {
+        textInfo.updateText(tile);
     }
 }
