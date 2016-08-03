@@ -1,6 +1,9 @@
 package worldSim;
 
-import java.util.ArrayList;
+import java.awt.Point;
+import java.util.*;
+import za.co.luma.geom.Vector2DDouble;
+import za.co.luma.math.sampling.UniformPoissonDiskSampler;
 
 public class WorldModel {
     private int width;
@@ -21,8 +24,18 @@ public class WorldModel {
                 terrainMap[y][x] = Math.random() < 0.6;
             }
         }
+        UniformPoissonDiskSampler cityLocationSampler =
+            new UniformPoissonDiskSampler(0.0, 0.0,
+                    (double)width, (double)height, 2.0);
+        List<Vector2DDouble> locations = cityLocationSampler.sample();
+
         cities = new ArrayList<City>();
-        cities.add(new City(w / 2, h / 2));
+        for (Vector2DDouble l : locations) {
+            Point tile = new Point((int)l.x, (int)l.y);
+            if (getTerrain(tile.x, tile.y)) {
+                cities.add(new City(tile));
+            }
+        }
     }
 
     public int getWidth() {
