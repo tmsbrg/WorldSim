@@ -59,6 +59,6 @@ public class GUI implements Runnable,ActionListener,ChangeListener,
 
     // assumes given tile position is within the actual world
     public void setTileSelection(Point tile) {
-        textInfo.updateText(tile);
+        textInfo.updateText(tile, world);
     }
 }

@@ -1,16 +1,18 @@
 package worldSim;
 
+import java.util.ArrayList;
 
 public class WorldModel {
     private int width;
     private int height;
-    private boolean[][] terrainMap = null;
+    private boolean[][] terrainMap;
+    private ArrayList<City> cities;
 
-    WorldModel() {
+    public WorldModel() {
         this(21, 15);
     }
 
-    WorldModel(int w, int h) {
+    public WorldModel(int w, int h) {
         width = w;
         height = h;
         terrainMap = new boolean[height][width];
@@ -19,18 +21,24 @@ public class WorldModel {
                 terrainMap[y][x] = Math.random() < 0.6;
             }
         }
+        cities = new ArrayList<City>();
+        cities.add(new City(w / 2, h / 2));
     }
 
-    int getWidth() {
+    public int getWidth() {
         return width;
     }
 
-    int getHeight() {
+    public int getHeight() {
         return height;
     }
 
     // assumes x and y are in range
-    boolean getTerrain(int x, int y) {
+    public boolean getTerrain(int x, int y) {
         return terrainMap[y][x];
+    }
+
+    public ArrayList<City> getCities() {
+        return cities;
     }
 }

@@ -40,7 +40,16 @@ public class TileInfoText extends JScrollPane {
                 getBorder()));
     }
 
-    public void updateText(Point tile) {
-        infoArea.setText("Selected tile at "+tile.x+", "+tile.y);
+    public void updateText(Point tile, WorldModel world) {
+        String s = "";
+        for (City c : world.getCities()) {
+            if (c.getLocation().equals(tile)) {
+                s += c.getName() + " - City\n";
+            }
+        }
+        String terrainText = world.getTerrain(tile.x, tile.y) ?
+            "Grassland" : "Water";
+        s += "\nTerrain: "+terrainText;
+        infoArea.setText(s);
     }
 }
