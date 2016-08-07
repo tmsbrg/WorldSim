@@ -7,7 +7,7 @@ import javax.swing.*;
 import javax.imageio.ImageIO;
 import java.io.*;
 
-
+// handles the graphical world map and its mouse input
 public class WorldMap extends JPanel {
 
     private static final long serialVersionUID = 4025499860418720647L;

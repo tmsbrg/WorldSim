@@ -5,6 +5,7 @@ import java.util.*;
 import za.co.luma.geom.Vector2DDouble;
 import za.co.luma.math.sampling.UniformPoissonDiskSampler;
 
+// contains and handles world data and simulates time moving forward with ticks
 public class WorldModel {
     private int width;
     private int height;

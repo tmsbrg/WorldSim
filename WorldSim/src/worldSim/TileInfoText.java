@@ -3,6 +3,7 @@ package worldSim;
 import java.awt.*;
 import javax.swing.*;
 
+// handles the text description of the selected tile in the UI
 public class TileInfoText extends JScrollPane {
 
     private static final long serialVersionUID = -1713085912898401821L;

@@ -5,6 +5,7 @@ import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.event.*;
 
+// main class, contains UI and model components and handles input
 public class GUI implements Runnable,ChangeListener, TileSelectionReceiver {
 
     private WorldModel world;
