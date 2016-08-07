@@ -1,6 +1,7 @@
 package worldSim;
 
 import java.awt.*;
+import java.util.*;
 import javax.swing.*;
 
 // handles the text description of the selected tile in the UI
@@ -50,6 +51,13 @@ public class TileInfoText extends JScrollPane {
         for (City c : world.getCities()) {
             if (c.getLocation().equals(tile)) {
                 s += c.getName() + " - City\n";
+                ArrayList<Resource> resources = c.getResources();
+                if (resources.size() > 0) {
+                    s += "\nResources:\n";
+                    for (Resource r : resources) {
+                        s += "    " + r.getName() + "\n";
+                    }
+                }
             }
         }
         String terrainText = world.getTerrain(tile.x, tile.y) ?

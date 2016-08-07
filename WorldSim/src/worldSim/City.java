@@ -1,12 +1,14 @@
 package worldSim;
 
 import java.awt.Point;
+import java.util.*;
 import java.util.stream.IntStream;
 
 // represents a city in the world
 public class City implements Actor {
     private Point location;
     private String name;
+    private ArrayList<Resource> resources;
 
     public City(int x, int y) {
         this(new Point(x, y));
@@ -15,6 +17,9 @@ public class City implements Actor {
     public City(Point l) {
         location = l;
         name = CityNamer.getName();
+        resources = new ArrayList<Resource>();
+        resources.add(Resource.randomFood());
+        resources.add(Resource.randomNonFood());
     }
 
     public Point getLocation() {
@@ -23,6 +28,10 @@ public class City implements Actor {
 
     public String getName() {
         return name;
+    }
+
+    public ArrayList<Resource> getResources() {
+        return resources;
     }
 
     public void act(int tick) {
