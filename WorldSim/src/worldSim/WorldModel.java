@@ -26,6 +26,7 @@ public class WorldModel {
 
     public void regenerateMap() {
         tick = 0;
+        City.resetCityNames();
         terrainMap = new boolean[height][width];
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {

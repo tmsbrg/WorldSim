@@ -86,5 +86,14 @@ public class City implements Actor {
             currentNameIndex = (currentNameIndex + 1) % NAMES.length;
             return name;
         }
+
+        public static void reset() {
+            currentNameIndex = 0;
+            currentPostfixIndex = 0;
+        }
+    }
+
+    public static void resetCityNames() {
+        CityNamer.reset();
     }
 }
