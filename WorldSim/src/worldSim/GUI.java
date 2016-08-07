@@ -48,10 +48,13 @@ public class GUI implements Runnable,ChangeListener, TileSelectionReceiver {
                 KeyStroke.getKeyStroke(KeyEvent.VK_W, 0), "moveup");
         map.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(
                 KeyStroke.getKeyStroke(KeyEvent.VK_S, 0), "movedown");
+        map.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(
+                KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, 0), "space");
         map.getActionMap().put("moveleft", new MoveAction(-1, 0));
         map.getActionMap().put("moveright", new MoveAction(1, 0));
         map.getActionMap().put("moveup", new MoveAction(0, -1));
         map.getActionMap().put("movedown", new MoveAction(0, 1));
+        map.getActionMap().put("space", new NextTickAction());
         map.getActionMap().put("regenerate", new RegenerateAction());
     }
 
@@ -87,6 +90,16 @@ public class GUI implements Runnable,ChangeListener, TileSelectionReceiver {
         @Override
         public void actionPerformed(ActionEvent e) {
             map.moveSelectedTile(x, y);
+        }
+    }
+
+    private class NextTickAction extends AbstractAction {
+
+        private static final long serialVersionUID = 8884774874021699376L;
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            world.nextTick();
         }
     }
 

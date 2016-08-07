@@ -29,8 +29,7 @@ public class WorldMap extends JPanel {
             public void mouseClicked(MouseEvent e) {
                 selectedTile = new Point(e.getPoint().x / TILE_SIZE,
                         e.getPoint().y / TILE_SIZE);
-                repaint();
-                receiver.setTileSelection(selectedTile);
+                updateView();
             }
         });
         try {
@@ -49,13 +48,16 @@ public class WorldMap extends JPanel {
             selectedTile.x %= world.getWidth();
             selectedTile.y += y + world.getHeight();
             selectedTile.y %= world.getHeight();
-            repaint();
-            receiver.setTileSelection(selectedTile);
+            updateView();
         }
     }
 
     public void reloadMap() {
         selectedTile = null;
+        updateView();
+    }
+
+    public void updateView() {
         repaint();
         receiver.setTileSelection(selectedTile);
     }

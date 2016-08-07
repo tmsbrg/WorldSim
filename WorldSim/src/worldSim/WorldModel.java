@@ -8,8 +8,10 @@ import za.co.luma.math.sampling.UniformPoissonDiskSampler;
 public class WorldModel {
     private int width;
     private int height;
+    private int tick;
     private boolean[][] terrainMap;
     private ArrayList<City> cities;
+    private ArrayList<Actor> actors;
 
     public WorldModel() {
         this(21, 15);
@@ -22,6 +24,7 @@ public class WorldModel {
     }
 
     public void regenerateMap() {
+        tick = 0;
         terrainMap = new boolean[height][width];
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
@@ -30,14 +33,17 @@ public class WorldModel {
         }
         UniformPoissonDiskSampler cityLocationSampler =
             new UniformPoissonDiskSampler(0.0, 0.0,
-                    (double)width, (double)height, 2.5);
+                    (double)width, (double)height, 3.5);
         List<Vector2DDouble> locations = cityLocationSampler.sample();
 
         cities = new ArrayList<City>();
+        actors = new ArrayList<Actor>();
         for (Vector2DDouble l : locations) {
             Point tile = new Point((int)l.x, (int)l.y);
             if (getTerrain(tile.x, tile.y)) {
-                cities.add(new City(tile));
+                City city = new City(tile);
+                cities.add(city);
+                actors.add(city);
             }
         }
     }
@@ -57,5 +63,12 @@ public class WorldModel {
 
     public ArrayList<City> getCities() {
         return cities;
+    }
+
+    public void nextTick() {
+        tick++;
+        for (Actor actor : actors) {
+            actor.act(tick);
+        }
     }
 }

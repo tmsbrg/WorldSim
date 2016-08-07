@@ -2,7 +2,7 @@ package worldSim;
 
 import java.awt.Point;
 
-public class City {
+public class City implements Actor {
     private static final String[] NAMES = {
         "Damcya", "Alexandria", "Baron", "Mithril",
         "Mysidia", "Mist", "Lindblum", "Fabul",
@@ -37,5 +37,9 @@ public class City {
 
     public String getName() {
         return name;
+    }
+
+    public void act(int tick) {
+        System.out.println("tick "+tick+": "+getName() + " acts!");
     }
 }
