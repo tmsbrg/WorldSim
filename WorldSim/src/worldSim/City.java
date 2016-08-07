@@ -1,23 +1,10 @@
 package worldSim;
 
 import java.awt.Point;
+import java.util.stream.IntStream;
 
+// represents a city in the world
 public class City implements Actor {
-    private static final String[] NAMES = {
-        "Damcya", "Alexandria", "Baron", "Mithril",
-        "Mysidia", "Mist", "Lindblum", "Fabul",
-        "Cleyra", "Troia", "Burmecia", "Dali",
-        "Oeilvert", "Esto Gaza", "Ipsen's Castle",
-        "Madain Sari", "Conde Petie", "Elfheim",
-        "Onrac", "Pravoka", "Lufenia", "Melmond",
-        "Cornelia", "Altair", "Gatrea", "Fynn",
-        "Paloom", "Perseria", "Poft", "Raqia",
-        "Machanon", "Bafsk", "Deist", "Salamand",
-        "Amur", "Canaan", "Argus", "Hein", "Sasune",
-        "Doga", "Dastar", "Falgabard", "Kazus",
-        "Goldor", "Gysahl", "Nepto", "Saronia",
-        "Replito", "Tokkul", "Tozus", "Ur"
-    };
     private Point location;
     private String name;
 
@@ -27,8 +14,7 @@ public class City implements Actor {
 
     public City(Point l) {
         location = l;
-        int index = (int)(Math.random() * NAMES.length);
-        name = NAMES[index];
+        name = CityNamer.getName();
     }
 
     public Point getLocation() {
@@ -41,5 +27,55 @@ public class City implements Actor {
 
     public void act(int tick) {
         System.out.println("tick "+tick+": "+getName() + " acts!");
+    }
+
+    // static helper class for getting random city names,
+    // while avoiding choosing the same name twice
+    private final static class CityNamer {
+        private static final String[] NAMES = {
+            "Damcya", "Alexandria", "Baron", "Mithril",
+            "Mysidia", "Mist", "Lindblum", "Fabul",
+            "Cleyra", "Troia", "Burmecia", "Dali",
+            "Oeilvert", "Esto Gaza", "Ipsen's Castle",
+            "Madain Sari", "Conde Petie", "Elfheim",
+            "Onrac", "Pravoka", "Lufenia", "Melmond",
+            "Cornelia", "Altair", "Gatrea", "Fynn",
+            "Paloom", "Perseria", "Poft", "Raqia",
+            "Machanon", "Bafsk", "Deist", "Salamand",
+            "Amur", "Canaan", "Argus", "Hein", "Sasune",
+            "Doga", "Dastar", "Falgabard", "Kazus",
+            "Goldor", "Gysahl", "Nepto", "Saronia",
+            "Replito", "Tokkul", "Tozus", "Ur"
+        };
+        private static final String[] POSTFIXES = {
+            " _", "", " II", " III", " IV", " V", " VI",
+            " VII", " VIII", " IX", " X"
+        };
+        private static int currentNameIndex = 0;
+        private static int currentPostfixIndex = 0;
+        private static int[] nameOrder;
+
+        private CityNamer() { }
+
+        private static void shuffleNames() {
+            nameOrder = IntStream.range(0, NAMES.length).toArray();
+            for (int i = 0; i < NAMES.length; i++) {
+                int j = (int)(Math.random() * NAMES.length);
+                int temp = nameOrder[i];
+                nameOrder[i] = nameOrder[j];
+                nameOrder[j] = temp;
+            }
+        }
+
+        public static String getName() {
+            if (currentNameIndex == 0) {
+                shuffleNames();
+                currentPostfixIndex = (currentPostfixIndex + 1) % POSTFIXES.length;
+            }
+            String name = NAMES[nameOrder[currentNameIndex]] +
+                POSTFIXES[currentPostfixIndex];
+            currentNameIndex = (currentNameIndex + 1) % NAMES.length;
+            return name;
+        }
     }
 }
