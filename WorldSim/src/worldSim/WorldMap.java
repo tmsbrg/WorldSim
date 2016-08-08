@@ -78,6 +78,14 @@ public class WorldMap extends JPanel {
                 g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
             }
         }
+        City selectedCity = world.getCity(selectedTile);
+        if (selectedCity != null) {
+            for (Point p : selectedCity.getTradeArea()) {
+                g.setColor(world.getTerrain(p.x, p.y) ? Color.ORANGE : Color.MAGENTA);
+                g.fillRect(p.x * TILE_SIZE, p.y * TILE_SIZE,
+                        TILE_SIZE, TILE_SIZE);
+            }
+        }
         for (City c : world.getCities()) {
             Point location = c.getLocation();
             g.drawImage(cityImg, location.x * TILE_SIZE, location.y * TILE_SIZE,
