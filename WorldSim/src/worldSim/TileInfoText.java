@@ -48,15 +48,22 @@ public class TileInfoText extends JScrollPane {
             return;
         }
         String s = "";
-        for (City c : world.getCities()) {
-            if (c.getLocation().equals(tile)) {
-                s += c.getName() + " - City\n";
-                ArrayList<Resource> resources = c.getResources();
-                if (resources.size() > 0) {
-                    s += "\nResources:\n";
-                    for (Resource r : resources) {
-                        s += "    " + r.getName() + "\n";
-                    }
+        City c = world.getCity(tile);
+        if (c != null) {
+            s += c.getName() + " - City\n";
+            Collection<Resource> resources = c.getResources();
+            if (resources.size() > 0) {
+                s += "\nResources:\n";
+                for (Resource r : resources) {
+                    s += "    " + r.getName() + "\n";
+                }
+            }
+            Collection<Point> tradeRoutes = c.trade.getTradeRoutes();
+            if (tradeRoutes.size() > 0) {
+                s += "\nTrade routes:\n";
+                for (Point route : tradeRoutes) {
+                    s += "    " + world.getCity(route).getName() + " - " +
+                        c.trade.getDistance(route) + "\n";
                 }
             }
         }

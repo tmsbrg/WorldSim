@@ -9,7 +9,7 @@ public class City implements Actor {
     private Point location;
     private String name;
     private ArrayList<Resource> resources;
-    private TradeNode trade;
+    public final TradeNode trade;
 
     public City(int x, int y) {
         this(new Point(x, y));
@@ -24,14 +24,6 @@ public class City implements Actor {
         trade = new TradeNode(location);
     }
 
-    public Set<Point> getTradeArea() {
-        return trade.getTradeArea();
-    }
-
-    public void createTradeNetwork(WorldModel world) {
-        trade.createTradeNetwork(world);
-    }
-
     public Point getLocation() {
         return location;
     }
@@ -40,7 +32,7 @@ public class City implements Actor {
         return name;
     }
 
-    public ArrayList<Resource> getResources() {
+    public Collection<Resource> getResources() {
         return resources;
     }
 

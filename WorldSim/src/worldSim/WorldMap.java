@@ -80,7 +80,7 @@ public class WorldMap extends JPanel {
         }
         City selectedCity = world.getCity(selectedTile);
         if (selectedCity != null) {
-            for (Point p : selectedCity.getTradeArea()) {
+            for (Point p : selectedCity.trade.getTradeArea()) {
                 g.setColor(world.getTerrain(p.x, p.y) ? Color.ORANGE : Color.MAGENTA);
                 g.fillRect(p.x * TILE_SIZE, p.y * TILE_SIZE,
                         TILE_SIZE, TILE_SIZE);

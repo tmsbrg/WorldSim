@@ -58,7 +58,7 @@ public class WorldModel {
 
         // create trade routes
         for (City c : getCities()) {
-            c.createTradeNetwork(this);
+            c.trade.createTradeNetwork(this);
         }
     }
 

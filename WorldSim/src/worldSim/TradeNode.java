@@ -15,15 +15,32 @@ public class TradeNode {
     // pathfinding data returned from dijkstra's algorithm
     private HashMap<Point, Integer> distances;
     private HashMap<Point, Point> previousPoints;
+     // other trade nodes within reachable in our trade network
+    private ArrayList<Point> tradeRoutes;
 
     TradeNode(Point l) {
         location = l;
         distances = new HashMap<Point, Integer>();
         previousPoints = new HashMap<Point, Point>();
+        tradeRoutes = new ArrayList<Point>();
     }
 
     public Set<Point> getTradeArea() {
         return previousPoints.keySet();
+    }
+
+    public Collection<Point> getTradeRoutes() {
+        return tradeRoutes;
+    }
+
+    // p should be within trade area, otherwise returns null or
+    // Integer.MAX_VALUE, depending on input
+    public int getDistance(Point p) {
+        return distances.get(p);
+    }
+
+    public Point previousPoint(Point p) {
+        return previousPoints.get(p);
     }
 
     // uses pathfinding based on Dijkstra's algorithm with a maximum distance
@@ -59,7 +76,9 @@ public class TradeNode {
             }
             queue.remove(p);
 
-            // TODO: check for cities
+            if (world.getCity(p) != null && !p.equals(location)) {
+                tradeRoutes.add(p);
+            }
 
             for (Direction d : Direction.values()) {
                 Point neighbour = movePoint(p, d);
@@ -75,6 +94,8 @@ public class TradeNode {
                 }
             }
         }
+
+        Collections.sort(tradeRoutes, (Point p1, Point p2) -> distances.get(p1) - distances.get(p2));
     }
 
     // returns maximum possible trade distance in tiles based on constants
