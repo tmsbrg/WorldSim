@@ -78,18 +78,47 @@ public class WorldMap extends JPanel {
                 g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
             }
         }
+        for (City c : world.getCities()) {
+            g.setColor(Color.LIGHT_GRAY);
+            drawTradeRoutes(g, c.trade);
+        }
         City selectedCity = world.getCity(selectedTile);
         if (selectedCity != null) {
+            /* draw trade area
             for (Point p : selectedCity.trade.getTradeArea()) {
                 g.setColor(world.getTerrain(p.x, p.y) ? Color.ORANGE : Color.MAGENTA);
                 g.fillRect(p.x * TILE_SIZE, p.y * TILE_SIZE,
                         TILE_SIZE, TILE_SIZE);
             }
+            */
+            g.setColor(Color.MAGENTA);
+            drawTradeRoutes(g, selectedCity.trade);
         }
         for (City c : world.getCities()) {
             Point location = c.getLocation();
             g.drawImage(cityImg, location.x * TILE_SIZE, location.y * TILE_SIZE,
                     null);
         }
+    }
+
+    private void drawTradeRoutes(Graphics g, TradeNode trade) {
+        for (Point tradeRoute : trade.getTradeRoutes()) {
+            Point current = tradeRoute;
+            while (true) {
+                Point previous = trade.previousPoint(current);
+                if (previous == null) {
+                    break;
+                }
+                drawLine(g, current, previous);
+                current = previous;
+            }
+        }
+    }
+
+    private void drawLine(Graphics g, Point p1, Point p2) {
+        g.drawLine(p1.x * TILE_SIZE + TILE_SIZE / 2,
+                   p1.y * TILE_SIZE + TILE_SIZE / 2,
+                   p2.x * TILE_SIZE + TILE_SIZE / 2,
+                   p2.y * TILE_SIZE + TILE_SIZE / 2);
     }
 }
