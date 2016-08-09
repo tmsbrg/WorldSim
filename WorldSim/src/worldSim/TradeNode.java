@@ -7,7 +7,7 @@ public class TradeNode {
     private static final int MAX_TRADE_DISTANCE = 18;
     private static final int LAND_MOVE_COST = 3;
     private static final int WATER_MOVE_COST = 2;
-    // SHIP_BOARD_COST should be larger than both LAND and WATER move costs
+    private static final int CITY_MOVE_COST = 2;
     private static final int SHIP_BOARD_COST = 6;
 
     private Point location;
@@ -83,10 +83,13 @@ public class TradeNode {
             for (Direction d : Direction.values()) {
                 Point neighbour = movePoint(p, d);
                 if (neighbour.x < minX || neighbour.y < minY ||
-                        neighbour.x >= maxX || neighbour.y >= maxY) {
+                        neighbour.x >= maxX || neighbour.y >= maxY ||
+                        // cannot go diagonal on land
+                        world.getTerrain(p) && world.getTerrain(neighbour) &&
+                        d.isDiagonal()) {
                     continue;
                 }
-                int dist = distances.get(p) + distance(p, d, world);
+                int dist = distances.get(p) + getMoveCost(p, d, world);
                 if (dist <= MAX_TRADE_DISTANCE &&
                         dist < distances.get(neighbour)) {
                     distances.put(neighbour, dist);
@@ -103,6 +106,10 @@ public class TradeNode {
         @SuppressWarnings("unused")
         int fastestMoveCost = (WATER_MOVE_COST < LAND_MOVE_COST) ?
             WATER_MOVE_COST : LAND_MOVE_COST;
+        fastestMoveCost = (fastestMoveCost < SHIP_BOARD_COST) ?
+            fastestMoveCost : SHIP_BOARD_COST;
+        fastestMoveCost = (fastestMoveCost < CITY_MOVE_COST) ?
+            fastestMoveCost : CITY_MOVE_COST;
         return MAX_TRADE_DISTANCE / fastestMoveCost;
     }
 
@@ -120,21 +127,22 @@ public class TradeNode {
         return new Point(p.x + d.getPoint().x, p.y + d.getPoint().y);
     }
 
-    // returns distance between point p and next point in direction d
+    // returns move cost between point p and next point in direction d
     // assumes movePoint(p, d) returns a value within the world bounds
-    private int distance(Point p, Direction d, WorldModel world) {
+    private int getMoveCost(Point p, Direction d, WorldModel world) {
         Point p2 = movePoint(p, d);
 
-        if (world.getTerrain(p) && world.getTerrain(p2)) {
+        if (world.getCity(p) != null || world.getCity(p2) != null) {
+            // either tile is a city
+            return CITY_MOVE_COST;
+        } else if (world.getTerrain(p) && world.getTerrain(p2)) {
             // both tiles are land
-            // HACK: cannot go diagonal on land
-            return (d.isDiagonal()) ? MAX_TRADE_DISTANCE : LAND_MOVE_COST;
-        } else if (!world.getTerrain(p) && !world.getTerrain(p2) ||
-                world.getCity(p) != null || world.getCity(p2) != null) {
-            // both tiles are water, or 1 is water and other is city
+            return LAND_MOVE_COST;
+        } else if (!world.getTerrain(p) && !world.getTerrain(p2)) {
+            // both tiles are water
             return WATER_MOVE_COST;
         } else {
-            // one tile is water and other is non-city land
+            // one tile is water and other is land
             return SHIP_BOARD_COST;
         }
     }
