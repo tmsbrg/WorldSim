@@ -70,6 +70,14 @@ public class WorldModel {
         return height;
     }
 
+    public boolean contains(Point p) {
+        return contains(p.x, p.y);
+    }
+
+    public boolean contains(int x, int y) {
+        return x >= 0 && y >= 0 && x < width && y < height;
+    }
+
     public boolean getTerrain(Point p) {
         return getTerrain(p.x, p.y);
     }

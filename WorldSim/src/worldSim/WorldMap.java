@@ -15,7 +15,7 @@ public class WorldMap extends JPanel {
     private static final int TILE_SIZE = 32;
     private TileSelectionReceiver receiver;
     private WorldModel world;
-    private BufferedImage cityImg;
+    private BufferedImage tileset;
 
     private Point selectedTile = null;
 
@@ -34,13 +34,14 @@ public class WorldMap extends JPanel {
         });
         try {
             // from http://opengameart.org/content/tiny-16-basic
-            // in comment by William Thompson on 2014-05-16 10:03
+            // in comment by Grimfist on 2014-05-17 10:57
             // authors: Lanea Zimmerman (original 16x16),
-            //          William Thompson (32x32 repack)
+            //          William Thompson (32x32 repack),
+            //          Grimfist (additional edits)
             // license: CC-BY 3.0
-            cityImg = ImageIO.read(new File("data/city.png"));
+            tileset = ImageIO.read(new File("data/tiny32.png"));
         } catch (IOException e) {
-            System.err.println("Cannot load \"data/city.png\", exiting");
+            System.err.println("Cannot load \"data/tiny32.png\", exiting");
             System.exit(1);
         }
     }
@@ -66,25 +67,48 @@ public class WorldMap extends JPanel {
     }
 
     public void paintComponent(Graphics g) {
+
+        // draw base terrain
         for (int y = 0; y < world.getHeight(); y++) {
             for (int x = 0; x < world.getWidth(); x++) {
-                Color c;
-                if (selectedTile != null && x == selectedTile.x
-                        && y == selectedTile.y) {
-                    c = Color.YELLOW;
-                } else if (world.getTerrain(x, y)) {
-                    c = Color.GREEN;
+                if (world.getTerrain(x, y)) {
+                    drawTile(g, Tile.GRASS, x, y);
                 } else {
-                    c = Color.BLUE;
+                    drawTile(g, Tile.WATER_BACK, x, y);
+                    drawTile(g, Tile.WATER_FRONT, x, y);
                 }
-                g.setColor(c);
-                g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
             }
         }
+
+        // draw shore tiles
+        for (int y = 0; y < world.getHeight(); y++) {
+            for (int x = 0; x < world.getWidth(); x++) {
+                if (!world.getTerrain(x, y)) {
+                    for (Direction d : Direction.nonDiagional()) {
+                        Point location = d.move(x, y);
+                        if (world.contains(location) && world.getTerrain(location)) {
+                            Point shoreMidPoint = Tile.SHORE_MID.getPoint();
+                            Point tilePoint = d.moveBack(shoreMidPoint);
+                            drawTile(g, tilePoint.x, tilePoint.y, location.x, location.y);
+                        }
+                    }
+                }
+            }
+        }
+
+        // draw selection background
+        if (selectedTile != null) {
+            g.setColor(Color.YELLOW);
+            g.fillRect(selectedTile.x * TILE_SIZE, selectedTile.y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+        }
+
+        // draw trade network
         for (City c : world.getCities()) {
             g.setColor(Color.LIGHT_GRAY);
             drawTradeRoutes(g, c.trade);
         }
+
+        // draw selected city trade network
         City selectedCity = world.getCity(selectedTile);
         if (selectedCity != null) {
             /* draw trade area
@@ -94,13 +118,14 @@ public class WorldMap extends JPanel {
                         TILE_SIZE, TILE_SIZE);
             }
             */
-            g.setColor(Color.MAGENTA);
+            g.setColor(Color.BLACK);
             drawTradeRoutes(g, selectedCity.trade);
         }
+
+        // draw cities
         for (City c : world.getCities()) {
             Point location = c.getLocation();
-            g.drawImage(cityImg, location.x * TILE_SIZE, location.y * TILE_SIZE, TILE_SIZE, TILE_SIZE,
-                    null);
+            drawTile(g, Tile.CITY, location.x, location.y);
         }
     }
 
@@ -123,5 +148,46 @@ public class WorldMap extends JPanel {
                    p1.y * TILE_SIZE + TILE_SIZE / 2,
                    p2.x * TILE_SIZE + TILE_SIZE / 2,
                    p2.y * TILE_SIZE + TILE_SIZE / 2);
+    }
+
+    private void drawTile(Graphics g, Tile tile, int x, int y) {
+        drawTile(g, tile.getX(), tile.getY(), x, y);
+    }
+
+    private void drawTile(Graphics g, int tile_x, int tile_y, int x, int y) {
+        g.drawImage(tileset,
+                x * TILE_SIZE,
+                y * TILE_SIZE,
+                x * TILE_SIZE + TILE_SIZE,
+                y * TILE_SIZE + TILE_SIZE,
+                tile_x * TILE_SIZE,
+                tile_y * TILE_SIZE,
+                tile_x * TILE_SIZE + TILE_SIZE,
+                tile_y * TILE_SIZE + TILE_SIZE,
+                null);
+    }
+
+    private enum Tile {
+        GRASS(14, 1), CITY(11, 7), WATER_BACK(13, 7), WATER_FRONT(14, 7),
+        SHORE_MID(4, 6); // special tile, not a shore tile itself, but
+                         // surrouned by the shore tiles
+
+        private Point p;
+
+        private Tile(int x_index, int y_index) {
+            p = new Point(x_index, y_index);
+        }
+
+        private int getX() {
+            return p.x;
+        }
+
+        private int getY() {
+            return p.y;
+        }
+
+        private Point getPoint() {
+            return p;
+        }
     }
 }

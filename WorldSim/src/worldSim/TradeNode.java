@@ -81,7 +81,7 @@ public class TradeNode {
             }
 
             for (Direction d : Direction.values()) {
-                Point neighbour = movePoint(p, d);
+                Point neighbour = d.move(p);
                 if (neighbour.x < minX || neighbour.y < minY ||
                         neighbour.x >= maxX || neighbour.y >= maxY ||
                         // cannot go diagonal on land
@@ -123,14 +123,10 @@ public class TradeNode {
         return r;
     }
 
-    private Point movePoint(Point p, Direction d) {
-        return new Point(p.x + d.getPoint().x, p.y + d.getPoint().y);
-    }
-
     // returns move cost between point p and next point in direction d
-    // assumes movePoint(p, d) returns a value within the world bounds
+    // assumes d.move(p) returns a value within the world bounds
     private int getMoveCost(Point p, Direction d, WorldModel world) {
-        Point p2 = movePoint(p, d);
+        Point p2 = d.move(p);
 
         if (world.getCity(p) != null || world.getCity(p2) != null) {
             // either tile is a city
@@ -146,24 +142,4 @@ public class TradeNode {
             return SHIP_BOARD_COST;
         }
     }
-
-    private enum Direction {
-        NORTHWEST(-1, -1), NORTH(0, -1), NORTHEAST(1, -1),
-        WEST(-1, 0),                     EAST(1, 0),
-        SOUTHWEST(-1, 1),  SOUTH(0, 1),  SOUTHEAST(1, 1);
-
-        private final Point p;
-
-        private Direction(int x, int y) {
-            p = new Point(x, y);
-        }
-
-        public Point getPoint() {
-            return p;
-        }
-
-        public boolean isDiagonal() {
-            return Math.abs(p.x) == Math.abs(p.y);
-        }
-    };
 }
