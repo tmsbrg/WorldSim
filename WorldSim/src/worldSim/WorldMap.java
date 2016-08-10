@@ -53,8 +53,10 @@ public class WorldMap extends JPanel {
             selectedTile.x %= world.getWidth();
             selectedTile.y += y + world.getHeight();
             selectedTile.y %= world.getHeight();
-            updateView();
+        } else {
+            selectedTile = new Point(0, 0);
         }
+        updateView();
     }
 
     public void reloadMap() {

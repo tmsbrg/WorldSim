@@ -4,6 +4,8 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.event.*;
+import java.util.function.Consumer;
+import java.util.HashMap;
 
 // main class, contains UI and model components and handles input
 public class GUI implements Runnable,ChangeListener, TileSelectionReceiver {
@@ -11,6 +13,7 @@ public class GUI implements Runnable,ChangeListener, TileSelectionReceiver {
     private WorldModel world;
     private WorldMap map;
     private TileInfoText textInfo;
+    private KeyboardHandler keyboard;
 
     public void run() {
         world = new WorldModel();
@@ -43,26 +46,23 @@ public class GUI implements Runnable,ChangeListener, TileSelectionReceiver {
                         timeline.getPreferredSize().height + 40));
         f.setVisible(true);
 
+
         // keyboard input
-        // needs any component, map is chosen arbitrarily
-        map.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(
-                KeyStroke.getKeyStroke(KeyEvent.VK_R, 0), "regenerate");
-        map.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(
-                KeyStroke.getKeyStroke(KeyEvent.VK_A, 0), "moveleft");
-        map.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(
-                KeyStroke.getKeyStroke(KeyEvent.VK_D, 0), "moveright");
-        map.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(
-                KeyStroke.getKeyStroke(KeyEvent.VK_W, 0), "moveup");
-        map.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(
-                KeyStroke.getKeyStroke(KeyEvent.VK_S, 0), "movedown");
-        map.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(
-                KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, 0), "space");
-        map.getActionMap().put("moveleft", new MoveAction(-1, 0));
-        map.getActionMap().put("moveright", new MoveAction(1, 0));
-        map.getActionMap().put("moveup", new MoveAction(0, -1));
-        map.getActionMap().put("movedown", new MoveAction(0, 1));
-        map.getActionMap().put("space", new NextTickAction());
-        map.getActionMap().put("regenerate", new RegenerateAction());
+        keyboard = new KeyboardHandler();
+        f.setFocusable(true);
+        f.addKeyListener(keyboard);
+        keyboard.bindKey(KeyEvent.VK_UP,
+                (KeyEvent e) -> map.moveSelectedTile(0, -1));
+        keyboard.bindKey(KeyEvent.VK_DOWN,
+                (KeyEvent e) -> map.moveSelectedTile(0, 1));
+        keyboard.bindKey(KeyEvent.VK_LEFT,
+                (KeyEvent e) -> map.moveSelectedTile(-1, 0));
+        keyboard.bindKey(KeyEvent.VK_RIGHT,
+                (KeyEvent e) -> map.moveSelectedTile(1, 0));
+        keyboard.bindKey(KeyEvent.VK_SPACE,
+                (KeyEvent e) -> world.nextTick());
+        keyboard.bindKey(KeyEvent.VK_R,
+                (KeyEvent e) -> {world.regenerateMap(); map.reloadMap();});
     }
 
     public void stateChanged(ChangeEvent e) {
@@ -78,44 +78,23 @@ public class GUI implements Runnable,ChangeListener, TileSelectionReceiver {
         textInfo.updateText(tile, world);
     }
 
-    private void regenerateMap() {
-        world.regenerateMap();
-        map.reloadMap();
-    }
+    private class KeyboardHandler extends KeyAdapter {
+        private HashMap<Integer, Consumer<KeyEvent>> keyMap;
 
-    private class MoveAction extends AbstractAction {
-        private static final long serialVersionUID = -7868311981765821389L;
+        public KeyboardHandler() {
+            keyMap = new HashMap<Integer, Consumer<KeyEvent>>();
+        }
 
-        private int x;
-        private int y;
-
-        public MoveAction(int x, int y) {
-            this.x = x;
-            this.y = y;
+        public void bindKey(int key, Consumer<KeyEvent> f) {
+            keyMap.put(key, f);
         }
 
         @Override
-        public void actionPerformed(ActionEvent e) {
-            map.moveSelectedTile(x, y);
-        }
-    }
-
-    private class NextTickAction extends AbstractAction {
-
-        private static final long serialVersionUID = 8884774874021699376L;
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            world.nextTick();
-        }
-    }
-
-    private class RegenerateAction extends AbstractAction {
-        private static final long serialVersionUID = 3894711001576570273L;
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            regenerateMap();
+        public void keyPressed(KeyEvent e) {
+            Consumer<KeyEvent> f = keyMap.get(e.getKeyCode());
+            if (f != null) {
+                f.accept(e);
+            }
         }
     }
 }
