@@ -17,7 +17,6 @@ public class GUI implements Runnable,ChangeListener, TileSelectionReceiver {
 
         // UI components
         JFrame f = new JFrame("WorldSim");
-        f.setPreferredSize(new Dimension(800, 400));
         f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         f.setLayout(new FlowLayout());
 
@@ -25,6 +24,9 @@ public class GUI implements Runnable,ChangeListener, TileSelectionReceiver {
         f.add(map);
 
         textInfo = new TileInfoText();
+        textInfo.setPreferredSize(new Dimension(
+                    textInfo.getPreferredSize().width,
+                    map.getPreferredSize().height));
         f.add(textInfo);
 
         JSlider timeline = new JSlider(JSlider.HORIZONTAL, 0, 400, 0);
@@ -34,7 +36,11 @@ public class GUI implements Runnable,ChangeListener, TileSelectionReceiver {
         timeline.setPreferredSize(new Dimension(700, 50));
         f.add(timeline);
 
-        f.pack();
+        Dimension mapSize = map.getPreferredSize();
+        Dimension textSize = textInfo.getPreferredSize();
+        f.setSize(new Dimension(mapSize.width + textSize.width + 20,
+                        Math.max(mapSize.height, textSize.height) +
+                        timeline.getPreferredSize().height + 40));
         f.setVisible(true);
 
         // keyboard input

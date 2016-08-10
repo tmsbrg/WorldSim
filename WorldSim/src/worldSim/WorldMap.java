@@ -12,7 +12,7 @@ public class WorldMap extends JPanel {
 
     private static final long serialVersionUID = 4025499860418720647L;
 
-    private static final int TILE_SIZE = 16;
+    private static final int TILE_SIZE = 32;
     private TileSelectionReceiver receiver;
     private WorldModel world;
     private BufferedImage cityImg;
@@ -34,7 +34,10 @@ public class WorldMap extends JPanel {
         });
         try {
             // from http://opengameart.org/content/tiny-16-basic
-            // author: Sharm, license: CC-BY 3.0
+            // in comment by William Thompson on 2014-05-16 10:03
+            // authors: Lanea Zimmerman (original 16x16),
+            //          William Thompson (32x32 repack)
+            // license: CC-BY 3.0
             cityImg = ImageIO.read(new File("data/city.png"));
         } catch (IOException e) {
             System.err.println("Cannot load \"data/city.png\", exiting");
@@ -96,7 +99,7 @@ public class WorldMap extends JPanel {
         }
         for (City c : world.getCities()) {
             Point location = c.getLocation();
-            g.drawImage(cityImg, location.x * TILE_SIZE, location.y * TILE_SIZE,
+            g.drawImage(cityImg, location.x * TILE_SIZE, location.y * TILE_SIZE, TILE_SIZE, TILE_SIZE,
                     null);
         }
     }
