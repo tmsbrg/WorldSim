@@ -19,8 +19,8 @@ public class City implements Actor {
         location = l;
         name = CityNamer.getName();
         resources = new ArrayList<Resource>();
-        resources.add(Resource.randomFood());
-        resources.add(Resource.randomNonFood());
+        resources.add(Resource.RandomFood());
+        resources.add(Resource.RandomNonFood());
         trade = new TradeNode(location);
     }
 

@@ -1,6 +1,7 @@
 package worldSim;
 
 import java.awt.*;
+import java.awt.geom.Line2D;
 import java.awt.image.*;
 import java.awt.event.*;
 import javax.swing.*;
@@ -66,7 +67,8 @@ public class WorldMap extends JPanel {
         receiver.setTileSelection(selectedTile);
     }
 
-    public void paintComponent(Graphics g) {
+    public void paintComponent(Graphics g1) {
+        Graphics2D g = (Graphics2D) g1;
 
         // draw base terrain
         for (int y = 0; y < world.getHeight(); y++) {
@@ -84,7 +86,7 @@ public class WorldMap extends JPanel {
         for (int y = 0; y < world.getHeight(); y++) {
             for (int x = 0; x < world.getWidth(); x++) {
                 if (!world.getTerrain(x, y)) {
-                    for (Direction d : Direction.nonDiagional()) {
+                    for (Direction d : Direction.NonDiagional()) {
                         Point location = d.move(x, y);
                         if (world.contains(location) && world.getTerrain(location)) {
                             Point shoreMidPoint = Tile.SHORE_MID.getPoint();
@@ -129,7 +131,7 @@ public class WorldMap extends JPanel {
         }
     }
 
-    private void drawTradeRoutes(Graphics g, TradeNode trade) {
+    private void drawTradeRoutes(Graphics2D g, TradeNode trade) {
         for (Point tradeRoute : trade.getTradeRoutes()) {
             Point current = tradeRoute;
             while (true) {
@@ -143,11 +145,12 @@ public class WorldMap extends JPanel {
         }
     }
 
-    private void drawLine(Graphics g, Point p1, Point p2) {
-        g.drawLine(p1.x * TILE_SIZE + TILE_SIZE / 2,
+    private void drawLine(Graphics2D g, Point p1, Point p2) {
+        g.setStroke(new BasicStroke(5));
+        g.draw(new Line2D.Float(p1.x * TILE_SIZE + TILE_SIZE / 2,
                    p1.y * TILE_SIZE + TILE_SIZE / 2,
                    p2.x * TILE_SIZE + TILE_SIZE / 2,
-                   p2.y * TILE_SIZE + TILE_SIZE / 2);
+                   p2.y * TILE_SIZE + TILE_SIZE / 2));
     }
 
     private void drawTile(Graphics g, Tile tile, int x, int y) {

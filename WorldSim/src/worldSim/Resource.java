@@ -29,7 +29,7 @@ public enum Resource {
     private static ArrayList<Resource> foodResource;
     private static ArrayList<Resource> nonFoodResource;
 
-    public static Resource randomFood() {
+    public static Resource RandomFood() {
         if (foodResource == null) {
             foodResource = new ArrayList<Resource>();
             for (Resource r : Resource.values()) {
@@ -42,7 +42,7 @@ public enum Resource {
         return foodResource.get(index);
     }
 
-    public static Resource randomNonFood() {
+    public static Resource RandomNonFood() {
         if (nonFoodResource == null) {
             nonFoodResource = new ArrayList<Resource>();
             for (Resource r : Resource.values()) {

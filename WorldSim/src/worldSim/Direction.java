@@ -41,7 +41,7 @@ public enum Direction {
 
     private static Direction[] nonDiagionalDirections;
 
-    public static List<Direction> nonDiagional() {
+    public static List<Direction> NonDiagional() {
         if (nonDiagionalDirections == null) {
             nonDiagionalDirections = new Direction[4];
             int i = 0;
