@@ -15,6 +15,10 @@ public class WorldModel {
     private boolean[][] terrainMap;
     private HashMap<Point, City> cities;
     private ArrayList<Actor> actors;
+    private ArrayList<Trader> traders;
+
+    private ArrayList<Actor> actorAddQueue;
+    private ArrayList<Actor> actorRemoveQueue;
 
     public WorldModel() {
         this(21, 15);
@@ -47,19 +51,25 @@ public class WorldModel {
         // add cities
         cities = new HashMap<Point, City>();
         actors = new ArrayList<Actor>();
+        actorAddQueue = new ArrayList<Actor>();
+        actorRemoveQueue = new ArrayList<Actor>();
+        traders = new ArrayList<Trader>();
         for (Vector2DDouble l : locations) {
             Point tile = new Point((int)l.x, (int)l.y);
             if (getTerrain(tile.x, tile.y)) {
-                City city = new City(tile);
+                City city = new City(tile, this);
                 cities.put(tile, city);
-                actors.add(city);
+                addActor(city);
             }
         }
 
         // create trade routes
         for (City c : getCities()) {
-            c.trade.createTradeNetwork(this);
+            c.trade.createTradeNetwork();
         }
+
+        finishActorAddRemove();
+        System.out.println("== World Regenerated ==");
     }
 
     public int getWidth() {
@@ -95,10 +105,45 @@ public class WorldModel {
         return cities.values();
     }
 
+    public void addActor(Actor a) {
+        actorAddQueue.add(a);
+    }
+
+    public void removeActor(Actor a) {
+        actorRemoveQueue.add(a);
+    }
+
+    public void addTrader(Trader t) {
+        addActor(t);
+        traders.add(t);
+    }
+
+    public void removeTrader(Trader t) {
+        removeActor(t);
+        traders.remove(t);
+    }
+
+    public Collection<Trader> getTraders() {
+        return traders;
+    }
+
     public void nextTick() {
         tick++;
+        System.out.println("Tick "+tick);
         for (Actor actor : actors) {
             actor.act(tick);
         }
+        finishActorAddRemove();
+    }
+
+    private void finishActorAddRemove() {
+        for (Actor a : actorAddQueue) {
+            actors.add(a);
+        }
+        actorAddQueue.clear();
+        for (Actor a : actorRemoveQueue) {
+            actors.remove(a);
+        }
+        actorRemoveQueue.clear();
     }
 }

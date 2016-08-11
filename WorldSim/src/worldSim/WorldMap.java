@@ -131,18 +131,24 @@ public class WorldMap extends JPanel {
             Point location = c.getLocation();
             drawTile(g, Tile.CITY, location.x, location.y);
         }
+
+        // draw traders
+        for (Trader t : world.getTraders()) {
+            Point location = t.getLocation();
+            drawTile(g, Tile.TRADER, location.x, location.y);
+        }
     }
 
     private void drawTradeRoutes(Graphics2D g, TradeNode trade) {
         for (Point tradeRoute : trade.getTradeRoutes()) {
             Point current = tradeRoute;
             while (true) {
-                Point previous = trade.previousPoint(current);
-                if (previous == null) {
+                Point next = trade.getNext(current);
+                if (next == null) {
                     break;
                 }
-                drawLine(g, current, previous);
-                current = previous;
+                drawLine(g, current, next);
+                current = next;
             }
         }
     }
@@ -174,6 +180,7 @@ public class WorldMap extends JPanel {
 
     private enum Tile {
         GRASS(14, 1), CITY(11, 7), WATER_BACK(13, 7), WATER_FRONT(14, 7),
+        TRADER(0, 8),
         SHORE_MID(4, 6); // special tile, not a shore tile itself, but
                          // surrouned by the shore tiles
 

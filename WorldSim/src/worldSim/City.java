@@ -11,17 +11,17 @@ public class City implements Actor {
     private ArrayList<Resource> resources;
     public final TradeNode trade;
 
-    public City(int x, int y) {
-        this(new Point(x, y));
+    public City(int x, int y, WorldModel world) {
+        this(new Point(x, y), world);
     }
 
-    public City(Point l) {
+    public City(Point l, WorldModel world) {
         location = l;
         name = CityNamer.getName();
         resources = new ArrayList<Resource>();
         resources.add(Resource.RandomFood());
         resources.add(Resource.RandomNonFood());
-        trade = new TradeNode(location);
+        trade = new TradeNode(location, world);
     }
 
     public Point getLocation() {
@@ -37,7 +37,9 @@ public class City implements Actor {
     }
 
     public void act(int tick) {
-        System.out.println("tick "+tick+": "+getName() + " acts!");
+        if (Math.random() < 0.01) {
+            trade.createTrader();
+        }
     }
 
     // static helper class for getting random city names,

@@ -60,7 +60,7 @@ public class GUI implements Runnable,ChangeListener, TileSelectionReceiver {
         keyboard.bindKey(KeyEvent.VK_RIGHT,
                 (KeyEvent e) -> map.moveSelectedTile(1, 0));
         keyboard.bindKey(KeyEvent.VK_SPACE,
-                (KeyEvent e) -> world.nextTick());
+                (KeyEvent e) -> {world.nextTick(); map.updateView();});
         keyboard.bindKey(KeyEvent.VK_R,
                 (KeyEvent e) -> {world.regenerateMap(); map.reloadMap();});
     }

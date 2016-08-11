@@ -11,22 +11,27 @@ public class TradeNode {
     private static final int SHIP_BOARD_COST = 6;
 
     private Point location;
+    private WorldModel world;
 
     // pathfinding data returned from dijkstra's algorithm
+    // maps tiles to their distance from this trade node
     private HashMap<Point, Integer> distances;
-    private HashMap<Point, Point> previousPoints;
+    // maps tiles to the next tile needed to get to this trade node with the
+    // fastest route
+    private HashMap<Point, Point> nextPoints;
      // other trade nodes within reachable in our trade network
     private ArrayList<Point> tradeRoutes;
 
-    TradeNode(Point l) {
+    TradeNode(Point l, WorldModel w) {
         location = l;
+        world = w;
         distances = new HashMap<Point, Integer>();
-        previousPoints = new HashMap<Point, Point>();
+        nextPoints = new HashMap<Point, Point>();
         tradeRoutes = new ArrayList<Point>();
     }
 
     public Set<Point> getTradeArea() {
-        return previousPoints.keySet();
+        return nextPoints.keySet();
     }
 
     public Collection<Point> getTradeRoutes() {
@@ -39,12 +44,31 @@ public class TradeNode {
         return distances.get(p);
     }
 
-    public Point previousPoint(Point p) {
-        return previousPoints.get(p);
+    public Point getNext(Point p) {
+        return nextPoints.get(p);
+    }
+
+    public void createTrader() {
+        if (tradeRoutes.size() == 0) {
+            return;
+        }
+        Point route = tradeRoutes.get((int)(Math.random() * tradeRoutes.size()));
+        Trader t = new Trader(location, world.getCity(route).trade);
+        System.out.println(world.getCity(location).getName() +
+                " created trader traveling to " +
+                world.getCity(route).getName());
+        world.addTrader(t);
+    }
+
+    public void receiveTrader(Trader t) {
+        System.out.println(world.getCity(location).getName() +
+                " receives trader from " +
+                world.getCity(t.getOrigin()).getName());
+        world.removeTrader(t);
     }
 
     // uses pathfinding based on Dijkstra's algorithm with a maximum distance
-    public void createTradeNetwork(WorldModel world) {
+    public void createTradeNetwork() {
         // get rectangle to pathfind in, avoid pathfinding the whole world
         int minX = location.x - maxPossibleTradeDistance();
         minX = (minX < 0) ? 0 : minX;
@@ -89,11 +113,11 @@ public class TradeNode {
                         d.isDiagonal()) {
                     continue;
                 }
-                int dist = distances.get(p) + getMoveCost(p, d, world);
+                int dist = distances.get(p) + getMoveCost(p, neighbour);
                 if (dist <= MAX_TRADE_DISTANCE &&
                         dist < distances.get(neighbour)) {
                     distances.put(neighbour, dist);
-                    previousPoints.put(neighbour, p);
+                    nextPoints.put(neighbour, p);
                 }
             }
         }
@@ -123,18 +147,16 @@ public class TradeNode {
         return r;
     }
 
-    // returns move cost between point p and next point in direction d
-    // assumes d.move(p) returns a value within the world bounds
-    private int getMoveCost(Point p, Direction d, WorldModel world) {
-        Point p2 = d.move(p);
-
-        if (world.getCity(p) != null || world.getCity(p2) != null) {
+    // returns move cost between two adjacent points
+    // assumes both points are within world and next to each other
+    public int getMoveCost(Point p1, Point p2) {
+        if (world.getCity(p1) != null || world.getCity(p2) != null) {
             // either tile is a city
             return CITY_MOVE_COST;
-        } else if (world.getTerrain(p) && world.getTerrain(p2)) {
+        } else if (world.getTerrain(p1) && world.getTerrain(p2)) {
             // both tiles are land
             return LAND_MOVE_COST;
-        } else if (!world.getTerrain(p) && !world.getTerrain(p2)) {
+        } else if (!world.getTerrain(p1) && !world.getTerrain(p2)) {
             // both tiles are water
             return WATER_MOVE_COST;
         } else {
